@@ -243,39 +243,24 @@ async function submitForm() {
   const data = collectData();
   generatePDF(data); // stocke dans _lastPdfDoc
 
-  // Corps HTML de l'email
-  function row(label, val) {
-    return `<tr><td style="padding:4px 10px;color:#555;font-size:13px"><b>${label}</b></td>`
-         + `<td style="padding:4px 10px;font-size:13px">${val}</td></tr>`;
-  }
-  const badgeColor = data.profil === 'Professeur' ? '#0f3460' : '#e94560';
-  let rowsIdent = row('Intervention', data.intervention);
-  if (data.nom) rowsIdent += row('Nom', data.nom + (data.prenom ? ' ' + data.prenom : ''));
-  rowsIdent += row('Établissement', data.etablissement);
-  rowsIdent += row('Classe', data.classe);
-  rowsIdent += row('Format', data.seance_type);
-  if (data.nb_seances) rowsIdent += row('Nombre de séances', data.nb_seances);
-  rowsIdent += row('Date', data.date);
-
-  const htmlBody = `
-  <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto">
-    <div style="background:#1a1a2e;color:#fff;padding:18px 22px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <h2 style="margin:0;font-size:17px">Retour d'intervention</h2>
-        <p style="margin:4px 0 0;opacity:.7;font-size:12px">Antonin Atger</p>
-      </div>
-      <span style="background:${badgeColor};color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold">${data.profil}</span>
-    </div>
-    <table style="width:100%;border-collapse:collapse;background:#fafbff;border:1px solid #dde3ee">${rowsIdent}</table>
-    <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #dde3ee;border-top:none">
-      ${row('Opinion générale', data.impression)}
-      ${row('Points pertinents et clairs', data.preferes)}
-      ${row('À améliorer', data.ameliorations)}
-      ${row('UNE chose à retenir', data.retenir)}
-      ${row('Note', `<b style="color:#e94560;font-size:16px">${data.note}</b>`)}
-    </table>
-    <p style="font-size:11px;color:#aaa;padding:8px 0">Reçu le ${new Date().toLocaleString('fr-FR')}</p>
-  </div>`;
+  // Corps texte de l'email
+  const sep = '─────────────────────────────';
+  let corps = `RETOUR D'INTERVENTION — ${data.profil.toUpperCase()}\n${sep}\n\n`;
+  corps += `Intervention : ${data.intervention}\n`;
+  if (data.nom) corps += `Nom          : ${data.nom}${data.prenom ? ' ' + data.prenom : ''}\n`;
+  corps += `Établissement: ${data.etablissement}\n`;
+  corps += `Classe       : ${data.classe}\n`;
+  corps += `Format       : ${data.seance_type}\n`;
+  if (data.nb_seances) corps += `Nb séances   : ${data.nb_seances}\n`;
+  corps += `Date         : ${data.date}\n`;
+  corps += `Note         : ${data.note}\n\n`;
+  corps += `${sep}\n\n`;
+  corps += `Opinion générale :\n${data.impression}\n\n`;
+  corps += `Points pertinents et clairs :\n${data.preferes}\n\n`;
+  corps += `À améliorer :\n${data.ameliorations}\n\n`;
+  corps += `UNE chose à retenir :\n${data.retenir}\n\n`;
+  corps += `${sep}\n`;
+  corps += `Reçu le ${new Date().toLocaleString('fr-FR')}`;
 
   try {
     const res = await fetch('https://api.web3forms.com/submit', {
@@ -283,10 +268,10 @@ async function submitForm() {
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body   : JSON.stringify({
         access_key: WEB3FORMS_KEY,
-        subject   : `[Retour ${data.profil}] ${data.intervention} — ${data.etablissement}`,
+        subject   : `[Retour ${data.profil}] ${data.intervention} | ${data.etablissement}`,
         name      : data.nom || 'Anonyme',
         email     : 'noreply@antoninatger.com',
-        message   : htmlBody,
+        message   : corps,
         botcheck  : '',
       }),
     });
