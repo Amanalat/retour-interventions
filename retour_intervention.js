@@ -293,14 +293,7 @@ async function submitForm() {
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Erreur Web3Forms');
 
-    // Écran de confirmation adapté au profil
-    if (isProf()) {
-      document.getElementById('done-msg').textContent = 'Vos réponses ont bien été transmises.';
-      document.getElementById('done-actions').classList.remove('hidden');
-    } else {
-      document.getElementById('done-msg').textContent = 'Vos réponses ont bien été transmises. Merci !';
-      document.getElementById('done-actions').classList.add('hidden');
-    }
+    document.getElementById('done-actions').classList.add('hidden');
     showScreen('step-done');
   } catch (err) {
     console.error('Erreur envoi :', err);
