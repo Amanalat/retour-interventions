@@ -1,4 +1,5 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.hidden { display: none !important; }
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -73,6 +74,7 @@ body {
 
 .field-group input[type="text"],
 .field-group input[type="number"],
+.field-group input[type="date"],
 .field-group select,
 .field-group textarea {
   width: 100%;
@@ -88,6 +90,7 @@ body {
 }
 
 .field-group input:focus,
+.field-group input[type="date"]:focus,
 .field-group select:focus,
 .field-group textarea:focus {
   outline: none;

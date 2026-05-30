@@ -14,7 +14,7 @@
     <div class="form-logo">A</div>
     <div class="form-header-text">
       <h1>Retour d'intervention</h1>
-      <p>Antonin Atger — Médiateur numérique</p>
+      <p>Antonin Atger</p>
     </div>
   </div>
 
@@ -28,9 +28,8 @@
     <div class="field-group">
       <label for="f-intervention">De quelle intervention s'agit-il ? <span class="required">*</span></label>
       <select id="f-intervention">
-        <option value="" disabled selected>— Choisir —</option>
-        <option value="Fake News et esprit critique (6e-5e)">Fake News et esprit critique (6e-5e)</option>
-        <option value="Fake News et esprit critique (CM1-CM2)">Fake News et esprit critique (CM1-CM2)</option>
+        <option value="" disabled selected>Choisissez</option>
+        <option value="Fake News et esprit critique">Fake News et esprit critique</option>
         <option value="Désinformation, au-delà de la Fake News">Désinformation, au-delà de la Fake News</option>
         <option value="Rhétorique et esprit critique">Rhétorique et esprit critique</option>
         <option value="Cours universitaires">Cours universitaires</option>
@@ -99,7 +98,7 @@
       <div class="field-group">
         <label for="f-nb-seances">Combien de séances avez-vous effectuées ?</label>
         <select id="f-nb-seances">
-          <option value="" disabled selected>— Nombre —</option>
+          <option value="" disabled selected>Choisissez</option>
           <option value="1">1</option><option value="2">2</option>
           <option value="3">3</option><option value="4">4</option>
           <option value="5">5</option><option value="6">6</option>
@@ -111,19 +110,7 @@
 
     <div class="field-group">
       <label id="label-date">Quand a eu lieu l'intervention ?</label>
-      <div class="date-row">
-        <input type="number" id="f-jour" placeholder="Jour" min="1" max="31" />
-        <select id="f-mois">
-          <option value="" disabled selected>Mois</option>
-          <option value="01">Janvier</option><option value="02">Février</option>
-          <option value="03">Mars</option><option value="04">Avril</option>
-          <option value="05">Mai</option><option value="06">Juin</option>
-          <option value="07">Juillet</option><option value="08">Août</option>
-          <option value="09">Septembre</option><option value="10">Octobre</option>
-          <option value="11">Novembre</option><option value="12">Décembre</option>
-        </select>
-        <input type="number" id="f-annee" placeholder="Année" min="2020" max="2035" />
-      </div>
+      <input type="date" id="f-date" />
     </div>
 
     <div class="step-nav">
@@ -188,10 +175,10 @@
     <div class="done-screen">
       <div class="done-icon">✓</div>
       <h2>Merci pour votre retour !</h2>
-      <p>Vos réponses ont bien été transmises.</p>
-      <div style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
-        <button class="btn-pdf hidden" id="btn-dl-pdf" onclick="downloadPDF()">Télécharger le PDF</button>
-        <button class="btn-next" onclick="resetForm()">Remplir un nouveau retour</button>
+      <p id="done-msg">Vos réponses ont bien été transmises.</p>
+      <div id="done-actions" style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+        <button class="btn-pdf" id="btn-dl-pdf" onclick="downloadPDF()">Télécharger le PDF</button>
+        <button class="btn-next" id="btn-new-retour" onclick="resetForm()">Remplir un nouveau retour</button>
       </div>
     </div>
   </div>

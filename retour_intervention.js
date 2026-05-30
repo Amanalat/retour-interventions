@@ -16,15 +16,11 @@ function getIntervention() {
 }
 
 function getDate() {
-  const j = document.getElementById('f-jour').value;
-  const m = document.getElementById('f-mois').value;
-  const a = document.getElementById('f-annee').value;
-  if (!j && !m && !a) return "Non renseignée";
-  const mois = {
-    "01":"janvier","02":"février","03":"mars","04":"avril","05":"mai","06":"juin",
-    "07":"juillet","08":"août","09":"septembre","10":"octobre","11":"novembre","12":"décembre"
-  };
-  return [j, m ? mois[m] : "", a].filter(Boolean).join(" ");
+  const val = document.getElementById('f-date').value; // YYYY-MM-DD
+  if (!val) return "Non renseignée";
+  const [y, m, d] = val.split('-');
+  const mois = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+  return `${parseInt(d)} ${mois[parseInt(m) - 1]} ${y}`;
 }
 
 // ── Réaction au changement de profil ─────────────────────────────────────────
@@ -189,7 +185,7 @@ function generatePDF(data) {
   doc.setFontSize(15); doc.setFont('helvetica', 'bold'); doc.setTextColor(255, 255, 255);
   doc.text('Retour d\'intervention', margin, y);
   doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor(200, 210, 230);
-  doc.text('Antonin Atger — Médiateur numérique', margin, y + 8);
+  doc.text('Antonin Atger', margin, y + 8);
 
   // Badge profil
   const badgeColor = data.profil === "Professeur" ? [15, 52, 96] : [233, 69, 96];
@@ -266,7 +262,7 @@ async function submitForm() {
     <div style="background:#1a1a2e;color:#fff;padding:18px 22px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center">
       <div>
         <h2 style="margin:0;font-size:17px">Retour d'intervention</h2>
-        <p style="margin:4px 0 0;opacity:.7;font-size:12px">Antonin Atger — Médiateur numérique</p>
+        <p style="margin:4px 0 0;opacity:.7;font-size:12px">Antonin Atger</p>
       </div>
       <span style="background:${badgeColor};color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold">${data.profil}</span>
     </div>
@@ -297,8 +293,14 @@ async function submitForm() {
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Erreur Web3Forms');
 
-    // Afficher le bouton PDF sur l'écran de confirmation
-    document.getElementById('btn-dl-pdf').classList.remove('hidden');
+    // Écran de confirmation adapté au profil
+    if (isProf()) {
+      document.getElementById('done-msg').textContent = 'Vos réponses ont bien été transmises.';
+      document.getElementById('done-actions').classList.remove('hidden');
+    } else {
+      document.getElementById('done-msg').textContent = 'Vos réponses ont bien été transmises. Merci !';
+      document.getElementById('done-actions').classList.add('hidden');
+    }
     showScreen('step-done');
   } catch (err) {
     console.error('Erreur envoi :', err);
@@ -311,10 +313,9 @@ async function submitForm() {
 // ── Reset ─────────────────────────────────────────────────────────────────────
 function resetForm() {
   _lastPdfDoc = null;
-  document.getElementById('btn-dl-pdf').classList.add('hidden');
-  document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => el.value = '');
+  document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
   document.getElementById('f-intervention').value = '';
-  document.getElementById('f-mois').value = '';
+  document.getElementById('f-date').value = '';
   document.getElementById('f-nb-seances').value = '';
   document.querySelector('input[name="seance"][value="unique"]').checked = true;
   document.getElementById('field-nb-seances').classList.add('hidden');
