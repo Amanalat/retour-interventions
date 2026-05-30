@@ -3,7 +3,7 @@ const WEB3FORMS_KEY = "ef1fe549-c616-4a27-a6c2-97f06caa913d";
 
 // ── Google Sheets (Apps Script) ───────────────────────────────────────────────
 // Collez ici l'URL de déploiement de votre Apps Script (voir SETUP_SHEETS.txt)
-const SHEETS_URL = "VOTRE_URL_APPS_SCRIPT";
+const SHEETS_URL = "https://hook.eu1.make.com/l15ckvxewndw5sp7aady0rux6kyy1khl";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function getProfil() {
