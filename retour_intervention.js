@@ -1,6 +1,9 @@
-// ── Web3Forms (même service que FakeMètre) ────────────────────────────────────
-// Clé liée à contact@antoninatger.com — visible dans fakemetre/index.html
+// ── Web3Forms ─────────────────────────────────────────────────────────────────
 const WEB3FORMS_KEY = "ef1fe549-c616-4a27-a6c2-97f06caa913d";
+
+// ── Google Sheets (Apps Script) ───────────────────────────────────────────────
+// Collez ici l'URL de déploiement de votre Apps Script (voir SETUP_SHEETS.txt)
+const SHEETS_URL = "VOTRE_URL_APPS_SCRIPT";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function getProfil() {
@@ -234,6 +237,16 @@ function generatePDF(data) {
   return doc.output('datauristring');
 }
 
+// ── Envoi vers Google Sheets ──────────────────────────────────────────────────
+function postToSheets(data) {
+  if (!SHEETS_URL || SHEETS_URL === "VOTRE_URL_APPS_SCRIPT") return;
+  fetch(SHEETS_URL, {
+    method   : 'POST',
+    mode     : 'no-cors',
+    body     : JSON.stringify(data),
+  }).catch(() => {}); // silencieux — l'email reste la source principale
+}
+
 // ── Soumission ────────────────────────────────────────────────────────────────
 async function submitForm() {
   const btn = document.getElementById('btn-submit');
@@ -278,7 +291,8 @@ async function submitForm() {
     const json = await res.json();
     if (!json.success) throw new Error(json.message || 'Erreur Web3Forms');
 
-    document.getElementById('done-actions').classList.add('hidden');
+    postToSheets(data);
+    document.getElementById('done-actions').classList.remove('hidden');
     showScreen('step-done');
   } catch (err) {
     console.error('Erreur envoi :', err);
