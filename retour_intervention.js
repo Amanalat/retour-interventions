@@ -241,10 +241,10 @@ function generatePDF(data) {
 function postToSheets(data) {
   if (!SHEETS_URL || SHEETS_URL === "VOTRE_URL_APPS_SCRIPT") return;
   fetch(SHEETS_URL, {
-    method   : 'POST',
-    mode     : 'no-cors',
-    body     : JSON.stringify(data),
-  }).catch(() => {}); // silencieux — l'email reste la source principale
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify(data),
+  }).catch(() => {});
 }
 
 // ── Soumission ────────────────────────────────────────────────────────────────
