@@ -240,11 +240,14 @@ function generatePDF(data) {
 // ── Envoi vers Google Sheets ──────────────────────────────────────────────────
 function postToSheets(data) {
   if (!SHEETS_URL || SHEETS_URL === "VOTRE_URL_APPS_SCRIPT") return;
+  console.log('postToSheets appelé', SHEETS_URL);
   fetch(SHEETS_URL, {
     method  : 'POST',
     headers : { 'Content-Type': 'application/json' },
     body    : JSON.stringify(data),
-  }).catch(() => {});
+  })
+  .then(r => console.log('Make réponse:', r.status))
+  .catch(e => console.error('Make erreur:', e));
 }
 
 // ── Soumission ────────────────────────────────────────────────────────────────
