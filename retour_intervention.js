@@ -42,6 +42,7 @@ function goToStep(n) {
   document.getElementById('step-' + n).classList.remove('hidden');
 
   if (n === 1) setupStep1();
+  if (n === 3) setupStep3();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -79,6 +80,14 @@ function setupStep1() {
   // Réinitialise le radio séance + champs dépendants
   document.querySelector('input[name="seance"][value="unique"]').checked = true;
   onSeanceChange();
+}
+
+// ── Étape 3 : témoignage ──────────────────────────────────────────────────────
+function setupStep3() {
+  const prof = isProf();
+  // Élève : message toujours anonyme — Professeur : case à cocher d'anonymat
+  document.getElementById('temoignage-note-eleve').style.display = prof ? 'none' : '';
+  document.getElementById('temoignage-anon-prof').style.display  = prof ? '' : 'none';
 }
 
 // ── Validation ───────────────────────────────────────────────────────────────
@@ -128,6 +137,9 @@ function collectData() {
     preferes     : document.getElementById('f-preferes').value.trim()     || "—",
     ameliorations: document.getElementById('f-ameliorations').value.trim()|| "—",
     retenir      : document.getElementById('f-retenir').value.trim()      || "—",
+    temoignage   : document.getElementById('f-temoignage').value.trim(),
+    // Élève : toujours anonyme. Professeur : selon la case cochée.
+    temoignage_anon: prof ? document.getElementById('f-temoignage-anon').checked : true,
   };
 }
 
@@ -224,6 +236,14 @@ function generatePDF(data) {
   qa('Points à améliorer', data.ameliorations);
   qa('UNE chose à retenir', data.retenir);
 
+  // Message pour le site (témoignage)
+  if (data.temoignage) {
+    sectionBar('Message pour le site');
+    const signature = data.temoignage_anon ? 'Anonyme' : (`${data.nom}${data.prenom ? ' ' + data.prenom : ''}`.trim() || 'Anonyme');
+    qa('Signature souhaitée', signature);
+    qa('Message', data.temoignage);
+  }
+
   // Pied de page
   const now = new Date();
   doc.setFontSize(7.5); doc.setFont('helvetica', 'italic'); doc.setTextColor(170, 170, 190);
@@ -275,6 +295,11 @@ async function submitForm() {
   corps += `Points pertinents et clairs :\n${data.preferes}\n\n`;
   corps += `À améliorer :\n${data.ameliorations}\n\n`;
   corps += `UNE chose à retenir :\n${data.retenir}\n\n`;
+  if (data.temoignage) {
+    corps += `${sep}\n\n`;
+    const signature = data.temoignage_anon ? 'Anonyme' : (`${data.nom}${data.prenom ? ' ' + data.prenom : ''}`.trim() || 'Anonyme');
+    corps += `MESSAGE POUR LE SITE (${signature}) :\n${data.temoignage}\n\n`;
+  }
   corps += `${sep}\n`;
   corps += `Reçu le ${new Date().toLocaleString('fr-FR')}`;
 
@@ -316,6 +341,7 @@ function resetForm() {
   document.getElementById('field-nb-seances').classList.add('hidden');
   document.getElementById('f-note-slider').value = 14;
   document.getElementById('f-note-display').textContent = '14 / 20';
+  document.getElementById('f-temoignage-anon').checked = false;
   document.getElementById('field-intervention-autre').classList.add('hidden');
   document.getElementById('prof-fields').classList.add('hidden');
   document.getElementById('field-nb-seances').classList.add('hidden');

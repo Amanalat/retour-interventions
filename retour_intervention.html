@@ -53,7 +53,7 @@
     <div class="step-nav">
       <button class="btn-next" onclick="goToStep(1)">Commencer →</button>
     </div>
-    <div class="step-counter">Étape 1 sur 3</div>
+    <div class="step-counter">Étape 1 sur 4</div>
   </div>
 
   <!-- ── ÉTAPE 1 : identification ── -->
@@ -117,7 +117,7 @@
       <button class="btn-back" onclick="goToStep(0)">← Retour</button>
       <button class="btn-next" onclick="goToStep(2)">Suivant →</button>
     </div>
-    <div class="step-counter">Étape 2 sur 3</div>
+    <div class="step-counter">Étape 2 sur 4</div>
   </div>
 
   <!-- ── ÉTAPE 2 : note + questions qualitatives ── -->
@@ -157,9 +157,41 @@
 
     <div class="step-nav">
       <button class="btn-back" onclick="goToStep(1)">← Retour</button>
+      <button class="btn-next" onclick="goToStep(3)">Suivant →</button>
+    </div>
+    <div class="step-counter">Étape 3 sur 4</div>
+  </div>
+
+  <!-- ── ÉTAPE 3 : témoignage pour le site ── -->
+  <div class="step hidden" id="step-3">
+    <div class="step-intro">
+      <h2>Un dernier mot ?</h2>
+      <p>Accepteriez-vous d'écrire un petit message vis-à-vis de mon intervention, que je posterai sur mon site ?</p>
+    </div>
+
+    <div class="field-group">
+      <label for="f-temoignage">Votre message (facultatif)</label>
+      <textarea id="f-temoignage" rows="4" placeholder="Quelques mots que je pourrais partager sur mon site…"></textarea>
+    </div>
+
+    <!-- Élève : message toujours anonyme -->
+    <p class="temoignage-note" id="temoignage-note-eleve">
+      Rassurez-vous, ce message sera publié <strong>de façon anonyme</strong>.
+    </p>
+
+    <!-- Professeur : choix de l'anonymat -->
+    <div class="field-group" id="temoignage-anon-prof" style="display:none">
+      <label class="checkbox-label">
+        <input type="checkbox" id="f-temoignage-anon" />
+        Je préfère que ce message soit publié de façon anonyme
+      </label>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn-back" onclick="goToStep(2)">← Retour</button>
       <button class="btn-submit" id="btn-submit" onclick="submitForm()">Envoyer mon retour ✓</button>
     </div>
-    <div class="step-counter">Étape 3 sur 3</div>
+    <div class="step-counter">Étape 4 sur 4</div>
   </div>
 
   <!-- ── Envoi en cours ── -->

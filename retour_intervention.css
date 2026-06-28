@@ -124,6 +124,27 @@ body {
 }
 .radio-label input[type="radio"] { accent-color: #e94560; width: 16px; height: 16px; }
 
+/* ── Checkbox (anonymat témoignage) ── */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .9rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] { accent-color: #e94560; width: 16px; height: 16px; }
+
+/* ── Note témoignage (élève) ── */
+.temoignage-note {
+  font-size: .85rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: .6rem .8rem;
+  margin: 0 0 1rem;
+}
+
 /* ── Note slider ── */
 .note-row {
   display: flex;
