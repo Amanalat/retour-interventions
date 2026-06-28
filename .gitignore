@@ -1,0 +1,7 @@
+# Serveur local SMTP — contient un mot de passe en clair, NE PAS committer
+serveur_retour.py
+
+# Scripts et fichiers de travail locaux
+watch_and_deploy.ps1
+*.xlsx
+*.txt
