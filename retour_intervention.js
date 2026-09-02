@@ -6,16 +6,37 @@ const WEB3FORMS_KEY = "ef1fe549-c616-4a27-a6c2-97f06caa913d";
 const SHEETS_URL = "https://hook.eu1.make.com/l15ckvxewndw5sp7aady0rux6kyy1khl";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-function getProfil() {
-  return document.querySelector('input[name="profil"]:checked')?.value || "élève";
+function getTypeLieu() {
+  return document.querySelector('input[name="lieu"]:checked')?.value || "scolaire";
 }
 
-function isProf() { return getProfil() === "professeur"; }
+function isScolaire() { return getTypeLieu() === "scolaire"; }
+
+function getProfil() {
+  if (isScolaire()) return document.querySelector('input[name="profil-scolaire"]:checked')?.value || "élève";
+  return document.querySelector('input[name="profil-hors-scolaire"]:checked')?.value || "spectateur";
+}
+
+function isMajeur() {
+  return document.querySelector('input[name="majeur"]:checked')?.value === "oui";
+}
+
+// Peut donner son nom : professeur (scolaire) ou majeur (hors scolaire) — les autres restent anonymes
+function canIdentify() {
+  return isScolaire() ? getProfil() === "professeur" : isMajeur();
+}
 
 function getIntervention() {
   const sel = document.getElementById('f-intervention').value;
   if (sel === "Autre") return document.getElementById('f-intervention-autre').value.trim() || "Autre";
   return sel;
+}
+
+const MODALITE_LABELS = { presentiel: "Pr\u00e9sentiel", distanciel: "Distanciel" };
+
+function getModalite() {
+  const val = document.querySelector('input[name="modalite"]:checked')?.value || "presentiel";
+  return MODALITE_LABELS[val];
 }
 
 function getDate() {
@@ -26,11 +47,22 @@ function getDate() {
   return `${parseInt(d)} ${mois[parseInt(m) - 1]} ${y}`;
 }
 
-// ── Réaction au changement de profil ─────────────────────────────────────────
+// ── Réaction au changement de lieu / profil ──────────────────────────────────
+function onTypeLieuChange() {
+  const scolaire = isScolaire();
+  document.getElementById('profil-scolaire').classList.toggle('hidden', !scolaire);
+  document.getElementById('profil-hors-scolaire').classList.toggle('hidden', scolaire);
+  onProfilChange();
+}
+
 function onProfilChange() {
-  const prof = isProf();
-  // Message anonymat : affiché seulement pour les élèves
-  document.getElementById('intro-anon').style.display = prof ? 'none' : '';
+  // Message anonymat : masqué seulement quand le rôle garantit déjà une identification (professeur)
+  const identifieDoffice = isScolaire() && getProfil() === "professeur";
+  document.getElementById('intro-anon').style.display = identifieDoffice ? 'none' : '';
+}
+
+function onMajeurChange() {
+  document.getElementById('prof-fields').classList.toggle('hidden', !isMajeur());
 }
 
 // ── Navigation ───────────────────────────────────────────────────────────────
@@ -62,20 +94,50 @@ function onSeanceChange() {
   document.getElementById('label-date').textContent = multiple
     ? 'À quelle date a eu lieu la dernière intervention ?'
     : 'Quand a eu lieu l\'intervention ?';
+  document.getElementById('label-modalite').textContent = multiple
+    ? 'Les séances se sont-elles faites en présentiel ou en distanciel ?'
+    : 'L\'intervention s\'est-elle faite en présentiel ou en distanciel ?';
 }
 
 function setupStep1() {
-  const prof = isProf();
+  const scolaire = isScolaire();
+  const lieu = getTypeLieu();
+  const role = getProfil();
   const interv = getIntervention();
 
-  // Titre et intro dynamiques
+  // Titre dynamique
   document.getElementById('step1-titre').textContent = interv;
-  document.getElementById('step1-intro').textContent = prof
-    ? 'Quelques infos sur vous, votre établissement et les séances effectuées.'
-    : 'Quelques infos sur votre établissement et la date de l\'intervention.';
 
-  // Champs prof uniquement (nom, prénom)
-  document.getElementById('prof-fields').classList.toggle('hidden', !prof);
+  // Libellé du champ établissement selon le lieu
+  const labelEtabText = {
+    scolaire: "Quel est le nom de votre établissement ?",
+    mediatheque: "Quel est le nom de la médiathèque ?",
+    centre_social: "Quel est le nom du centre social ?",
+  }[lieu];
+  document.getElementById('label-etablissement').innerHTML = labelEtabText + ' <span class="required">*</span>';
+
+  // Intro dynamique
+  document.getElementById('step1-intro').textContent = scolaire
+    ? (role === 'professeur'
+        ? 'Quelques infos sur vous, votre établissement et les séances effectuées.'
+        : 'Quelques infos sur votre établissement et la date de l\'intervention.')
+    : 'Quelques infos sur la structure et la date de l\'intervention.';
+
+  // Champs classe / type d'intervention : établissement scolaire uniquement
+  document.getElementById('field-classe').classList.toggle('hidden', !scolaire);
+  document.getElementById('field-seance-type').classList.toggle('hidden', !scolaire);
+
+  // Question de majorité : hors établissement scolaire uniquement
+  document.getElementById('field-majeur').classList.toggle('hidden', scolaire);
+
+  if (scolaire) {
+    // Champs d'identification (nom, prénom) réservés au professeur
+    document.getElementById('prof-fields').classList.toggle('hidden', role !== 'professeur');
+  } else {
+    // Réinitialise la question de majorité à chaque entrée dans l'étape
+    document.querySelectorAll('input[name="majeur"]').forEach(el => el.checked = false);
+    document.getElementById('prof-fields').classList.add('hidden');
+  }
 
   // Réinitialise le radio séance + champs dépendants
   document.querySelector('input[name="seance"][value="unique"]').checked = true;
@@ -84,10 +146,10 @@ function setupStep1() {
 
 // ── Étape 3 : témoignage ──────────────────────────────────────────────────────
 function setupStep3() {
-  const prof = isProf();
-  // Élève : message toujours anonyme — Professeur : case à cocher d'anonymat
-  document.getElementById('temoignage-note-eleve').style.display = prof ? 'none' : '';
-  document.getElementById('temoignage-anon-prof').style.display  = prof ? '' : 'none';
+  const identified = canIdentify();
+  // Non identifiable (élève, mineur…) : message toujours anonyme — Sinon : case à cocher d'anonymat
+  document.getElementById('temoignage-note-eleve').style.display = identified ? 'none' : '';
+  document.getElementById('temoignage-anon-prof').style.display  = identified ? '' : 'none';
 }
 
 // ── Validation ───────────────────────────────────────────────────────────────
@@ -102,9 +164,21 @@ function validateStep0() {
 function validateStep1() {
   const etab = document.getElementById('f-etablissement').value.trim();
   if (!etab) { alert("Veuillez indiquer le nom de l'établissement."); return false; }
-  if (isProf()) {
-    const nom = document.getElementById('f-nom').value.trim();
-    if (!nom) { alert("Veuillez indiquer votre nom."); return false; }
+
+  if (isScolaire()) {
+    if (getProfil() === 'professeur') {
+      const nom = document.getElementById('f-nom').value.trim();
+      if (!nom) { alert("Veuillez indiquer votre nom."); return false; }
+    }
+  } else {
+    if (!document.querySelector('input[name="majeur"]:checked')) {
+      alert("Veuillez indiquer si vous êtes majeur(e).");
+      return false;
+    }
+    if (isMajeur()) {
+      const nom = document.getElementById('f-nom').value.trim();
+      if (!nom) { alert("Veuillez indiquer votre nom."); return false; }
+    }
   }
   return true;
 }
@@ -120,26 +194,33 @@ function updateNote(val) {
 }
 
 // ── Collecte des données ──────────────────────────────────────────────────────
+const LIEU_LABELS = { scolaire: "Établissement scolaire", mediatheque: "Médiathèque", centre_social: "Centre social" };
+const ROLE_LABELS = { "élève": "Élève", "professeur": "Professeur", "spectateur": "Spectateur", "organisateur": "Organisateur" };
+
 function collectData() {
-  const prof = isProf();
+  const scolaire = isScolaire();
+  const identified = canIdentify();
   return {
-    profil       : prof ? "Professeur" : "Élève",
+    typeLieu     : LIEU_LABELS[getTypeLieu()],
+    profil       : ROLE_LABELS[getProfil()],
     intervention : getIntervention(),
-    nom          : prof ? document.getElementById('f-nom').value.trim()    : "",
-    prenom       : prof ? document.getElementById('f-prenom').value.trim() : "",
+    nom          : identified ? document.getElementById('f-nom').value.trim()    : "",
+    prenom       : identified ? document.getElementById('f-prenom').value.trim() : "",
     etablissement: document.getElementById('f-etablissement').value.trim(),
-    classe       : document.getElementById('f-classe').value.trim() || "Non renseigné",
-    nb_seances   : isSeanceMultiple() ? (document.getElementById('f-nb-seances').value || "Non renseigné") : "",
-    seance_type  : isSeanceMultiple() ? "Séances multiples" : "Séance unique",
+    classe       : scolaire ? (document.getElementById('f-classe').value.trim() || "Non renseigné") : "",
+    nb_seances   : scolaire && isSeanceMultiple() ? (document.getElementById('f-nb-seances').value || "Non renseigné") : "",
+    seance_type  : scolaire ? (isSeanceMultiple() ? "Séances multiples" : "Séance unique") : "",
+    majeur       : scolaire ? "" : (isMajeur() ? "Oui" : "Non"),
     date         : getDate(),
+    modalite     : getModalite(),
     note         : document.getElementById('f-note-slider').value + " / 20",
     impression   : document.getElementById('f-impression').value.trim()   || "—",
     preferes     : document.getElementById('f-preferes').value.trim()     || "—",
     ameliorations: document.getElementById('f-ameliorations').value.trim()|| "—",
     retenir      : document.getElementById('f-retenir').value.trim()      || "—",
     temoignage   : document.getElementById('f-temoignage').value.trim(),
-    // Élève : toujours anonyme. Professeur : selon la case cochée.
-    temoignage_anon: prof ? document.getElementById('f-temoignage-anon').checked : true,
+    // Non identifiable (élève, mineur…) : toujours anonyme. Sinon : selon la case cochée.
+    temoignage_anon: identified ? document.getElementById('f-temoignage-anon').checked : true,
   };
 }
 
@@ -203,7 +284,7 @@ function generatePDF(data) {
   doc.text('Antonin Atger', margin, y + 8);
 
   // Badge profil
-  const badgeColor = data.profil === "Professeur" ? [15, 52, 96] : [233, 69, 96];
+  const badgeColor = ["Professeur", "Organisateur"].includes(data.profil) ? [15, 52, 96] : [233, 69, 96];
   doc.setFillColor(...badgeColor);
   doc.roundedRect(W - margin - 32, 5, 32, 10, 2, 2, 'F');
   doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(255, 255, 255);
@@ -221,13 +302,16 @@ function generatePDF(data) {
 
   // Infos générales
   sectionBar('Informations générales');
+  qa('Cadre', data.typeLieu);
   qa('Intervention', data.intervention);
   if (data.nom)    qa('Nom', data.nom + (data.prenom ? ' ' + data.prenom : ''));
   qa('Établissement', data.etablissement);
-  qa('Classe', data.classe);
-  qa('Format', data.seance_type);
+  if (data.classe) qa('Classe', data.classe);
+  if (data.seance_type) qa('Format', data.seance_type);
   if (data.nb_seances) qa('Nombre de séances', data.nb_seances);
+  if (data.majeur) qa('Majeur(e)', data.majeur);
   qa('Date de l\'intervention', data.date);
+  qa('Modalit\u00e9', data.modalite);
 
   // Retour qualitatif
   sectionBar('Retour qualitatif');
@@ -282,13 +366,16 @@ async function submitForm() {
   // Corps texte de l'email
   const sep = '─────────────────────────────';
   let corps = `RETOUR D'INTERVENTION — ${data.profil.toUpperCase()}\n${sep}\n\n`;
+  corps += `Cadre        : ${data.typeLieu}\n`;
   corps += `Intervention : ${data.intervention}\n`;
   if (data.nom) corps += `Nom          : ${data.nom}${data.prenom ? ' ' + data.prenom : ''}\n`;
   corps += `Établissement: ${data.etablissement}\n`;
-  corps += `Classe       : ${data.classe}\n`;
-  corps += `Format       : ${data.seance_type}\n`;
+  if (data.classe) corps += `Classe       : ${data.classe}\n`;
+  if (data.seance_type) corps += `Format       : ${data.seance_type}\n`;
   if (data.nb_seances) corps += `Nb séances   : ${data.nb_seances}\n`;
+  if (data.majeur) corps += `Majeur(e)    : ${data.majeur}\n`;
   corps += `Date         : ${data.date}\n`;
+  corps += `Modalité     : ${data.modalite}\n`;
   corps += `Note         : ${data.note}\n\n`;
   corps += `${sep}\n\n`;
   corps += `Opinion générale :\n${data.impression}\n\n`;
@@ -338,14 +425,18 @@ function resetForm() {
   document.getElementById('f-date').value = '';
   document.getElementById('f-nb-seances').value = '';
   document.querySelector('input[name="seance"][value="unique"]').checked = true;
+  document.querySelector('input[name="modalite"][value="presentiel"]').checked = true;
   document.getElementById('field-nb-seances').classList.add('hidden');
   document.getElementById('f-note-slider').value = 14;
   document.getElementById('f-note-display').textContent = '14 / 20';
   document.getElementById('f-temoignage-anon').checked = false;
   document.getElementById('field-intervention-autre').classList.add('hidden');
   document.getElementById('prof-fields').classList.add('hidden');
-  document.getElementById('field-nb-seances').classList.add('hidden');
+  document.querySelectorAll('input[name="majeur"]').forEach(el => el.checked = false);
   document.getElementById('intro-anon').style.display = '';
-  document.querySelector('input[name="profil"][value="élève"]').checked = true;
+  document.querySelector('input[name="lieu"][value="scolaire"]').checked = true;
+  document.querySelector('input[name="profil-scolaire"][value="élève"]').checked = true;
+  document.querySelector('input[name="profil-hors-scolaire"][value="spectateur"]').checked = true;
+  onTypeLieuChange();
   goToStep(0);
 }

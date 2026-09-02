@@ -32,6 +32,7 @@
         <option value="Fake News et esprit critique">Fake News et esprit critique</option>
         <option value="Désinformation, au-delà de la Fake News">Désinformation, au-delà de la Fake News</option>
         <option value="Rhétorique et esprit critique">Rhétorique et esprit critique</option>
+        <option value="Arnaques en ligne">Arnaques en ligne</option>
         <option value="Cours universitaires">Cours universitaires</option>
         <option value="Autre">Autre</option>
       </select>
@@ -43,10 +44,27 @@
     </div>
 
     <div class="field-group">
+      <label>Vous êtes dans le cadre de… <span class="required">*</span></label>
+      <div class="radio-group">
+        <label class="radio-label"><input type="radio" name="lieu" value="scolaire" checked onchange="onTypeLieuChange()" /> Établissement scolaire</label>
+        <label class="radio-label"><input type="radio" name="lieu" value="mediatheque" onchange="onTypeLieuChange()" /> Médiathèque</label>
+        <label class="radio-label"><input type="radio" name="lieu" value="centre_social" onchange="onTypeLieuChange()" /> Centre social</label>
+      </div>
+    </div>
+
+    <div class="field-group" id="profil-scolaire">
       <label>Vous êtes… <span class="required">*</span></label>
       <div class="radio-group">
-        <label class="radio-label"><input type="radio" name="profil" value="élève" checked onchange="onProfilChange()" /> Élève</label>
-        <label class="radio-label"><input type="radio" name="profil" value="professeur" onchange="onProfilChange()" /> Professeur / Enseignant(e)</label>
+        <label class="radio-label"><input type="radio" name="profil-scolaire" value="élève" checked onchange="onProfilChange()" /> Élève</label>
+        <label class="radio-label"><input type="radio" name="profil-scolaire" value="professeur" onchange="onProfilChange()" /> Professeur / Enseignant(e)</label>
+      </div>
+    </div>
+
+    <div class="field-group hidden" id="profil-hors-scolaire">
+      <label>Vous êtes… <span class="required">*</span></label>
+      <div class="radio-group">
+        <label class="radio-label"><input type="radio" name="profil-hors-scolaire" value="spectateur" checked onchange="onProfilChange()" /> Spectateur / Spectatrice</label>
+        <label class="radio-label"><input type="radio" name="profil-hors-scolaire" value="organisateur" onchange="onProfilChange()" /> Organisateur / Organisatrice</label>
       </div>
     </div>
 
@@ -63,7 +81,21 @@
       <p id="step1-intro"></p>
     </div>
 
-    <!-- Champs professeur uniquement -->
+    <div class="field-group">
+      <label for="f-etablissement" id="label-etablissement">Quel est le nom de votre établissement ? <span class="required">*</span></label>
+      <input type="text" id="f-etablissement" placeholder="Ex : Lycée Jean Moulin, Toulouse" />
+    </div>
+
+    <!-- Majorité — hors établissement scolaire uniquement -->
+    <div class="field-group hidden" id="field-majeur">
+      <label>Êtes-vous majeur(e) ? <span class="required">*</span></label>
+      <div class="radio-group">
+        <label class="radio-label"><input type="radio" name="majeur" value="oui" onchange="onMajeurChange()" /> Oui</label>
+        <label class="radio-label"><input type="radio" name="majeur" value="non" onchange="onMajeurChange()" /> Non</label>
+      </div>
+    </div>
+
+    <!-- Champs d'identification : professeur (scolaire) ou majeur (hors scolaire) -->
     <div id="prof-fields" class="hidden">
       <div class="field-group">
         <label for="f-nom">Quel est votre nom ? <span class="required">*</span></label>
@@ -75,17 +107,12 @@
       </div>
     </div>
 
-    <div class="field-group">
-      <label for="f-etablissement">Quel est le nom de votre établissement ? <span class="required">*</span></label>
-      <input type="text" id="f-etablissement" placeholder="Ex : Lycée Jean Moulin, Toulouse" />
-    </div>
-
-    <div class="field-group">
+    <div class="field-group" id="field-classe">
       <label for="f-classe">Quelle est votre classe ?</label>
       <input type="text" id="f-classe" placeholder="Ex : 6e A, CM2, L3…" />
     </div>
 
-    <div class="field-group">
+    <div class="field-group" id="field-seance-type">
       <label>Type d'intervention</label>
       <div class="radio-group">
         <label class="radio-label"><input type="radio" name="seance" value="unique" checked onchange="onSeanceChange()" /> Séance unique</label>
@@ -111,6 +138,14 @@
     <div class="field-group">
       <label id="label-date">Quand a eu lieu l'intervention ?</label>
       <input type="date" id="f-date" />
+    </div>
+
+    <div class="field-group" id="field-modalite">
+      <label id="label-modalite">L'intervention s'est-elle faite en présentiel ou en distanciel ?</label>
+      <div class="radio-group">
+        <label class="radio-label"><input type="radio" name="modalite" value="presentiel" checked /> Pr&eacute;sentiel</label>
+        <label class="radio-label"><input type="radio" name="modalite" value="distanciel" /> Distanciel</label>
+      </div>
     </div>
 
     <div class="step-nav">
