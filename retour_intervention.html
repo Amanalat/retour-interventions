@@ -4,263 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Retour d'intervention — Antonin Atger</title>
-  <link rel="stylesheet" href="retour_intervention.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="canonical" href="https://antoninatger.github.io/cours/retour-interventions/retour_intervention.html" />
+  <meta http-equiv="refresh" content="0; url=https://antoninatger.github.io/cours/retour-interventions/retour_intervention.html" />
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+           background:#f4f6fb; color:#1f2937; display:flex; align-items:center;
+           justify-content:center; min-height:100vh; margin:0; padding:1.5rem; }
+    .box { background:#fff; border:1px solid #e1e6f2; border-radius:14px;
+           padding:2.4rem 2rem; max-width:460px; text-align:center;
+           box-shadow:0 8px 30px rgba(15,52,96,.08); }
+    h1 { font-size:1.25rem; margin:0 0 .8rem; color:#0f3460; }
+    p  { font-size:.95rem; line-height:1.6; color:#555; margin:0 0 1.4rem; }
+    a  { display:inline-block; background:#0f3460; color:#fff; text-decoration:none;
+         font-weight:700; padding:.7rem 1.5rem; border-radius:8px; }
+    a:hover { background:#e94560; }
+  </style>
 </head>
 <body>
-
-<div class="form-wrapper">
-  <div class="form-header">
-    <div class="form-logo">A</div>
-    <div class="form-header-text">
-      <h1>Retour d'intervention</h1>
-      <p>Antonin Atger</p>
-    </div>
+  <div class="box">
+    <h1>Le formulaire a déménagé</h1>
+    <p>Vous allez être redirigé automatiquement. Si rien ne se passe, utilisez le bouton ci-dessous.</p>
+    <a href="https://antoninatger.github.io/cours/retour-interventions/retour_intervention.html">Accéder au formulaire →</a>
   </div>
-
-  <!-- ── ÉTAPE 0 : intervention + profil ── -->
-  <div class="step" id="step-0">
-    <div class="step-intro">
-      <p>Merci de prendre quelques minutes pour ce retour !</p>
-      <p id="intro-anon">Rassurez-vous, <strong>tout est anonyme</strong>.</p>
-    </div>
-
-    <div class="field-group">
-      <label for="f-intervention">De quelle intervention s'agit-il ? <span class="required">*</span></label>
-      <select id="f-intervention">
-        <option value="" disabled selected>Choisissez</option>
-        <option value="Fake News et esprit critique">Fake News et esprit critique</option>
-        <option value="Désinformation, au-delà de la Fake News">Désinformation, au-delà de la Fake News</option>
-        <option value="Rhétorique et esprit critique">Rhétorique et esprit critique</option>
-        <option value="Arnaques en ligne">Arnaques en ligne</option>
-        <option value="Cours universitaires">Cours universitaires</option>
-        <option value="Autre">Autre</option>
-      </select>
-    </div>
-
-    <div class="field-group hidden" id="field-intervention-autre">
-      <label for="f-intervention-autre">Précisez :</label>
-      <input type="text" id="f-intervention-autre" placeholder="Nom de l'intervention" />
-    </div>
-
-    <div class="field-group">
-      <label>Vous êtes dans le cadre de… <span class="required">*</span></label>
-      <div class="radio-group">
-        <label class="radio-label"><input type="radio" name="lieu" value="scolaire" checked onchange="onTypeLieuChange()" /> Établissement scolaire</label>
-        <label class="radio-label"><input type="radio" name="lieu" value="mediatheque" onchange="onTypeLieuChange()" /> Médiathèque</label>
-        <label class="radio-label"><input type="radio" name="lieu" value="centre_social" onchange="onTypeLieuChange()" /> Centre social</label>
-      </div>
-    </div>
-
-    <div class="field-group" id="profil-scolaire">
-      <label>Vous êtes… <span class="required">*</span></label>
-      <div class="radio-group">
-        <label class="radio-label"><input type="radio" name="profil-scolaire" value="élève" checked onchange="onProfilChange()" /> Élève</label>
-        <label class="radio-label"><input type="radio" name="profil-scolaire" value="professeur" onchange="onProfilChange()" /> Professeur / Enseignant(e)</label>
-      </div>
-    </div>
-
-    <div class="field-group hidden" id="profil-hors-scolaire">
-      <label>Vous êtes… <span class="required">*</span></label>
-      <div class="radio-group">
-        <label class="radio-label"><input type="radio" name="profil-hors-scolaire" value="spectateur" checked onchange="onProfilChange()" /> Spectateur / Spectatrice</label>
-        <label class="radio-label"><input type="radio" name="profil-hors-scolaire" value="organisateur" onchange="onProfilChange()" /> Organisateur / Organisatrice</label>
-      </div>
-    </div>
-
-    <div class="step-nav">
-      <button class="btn-next" onclick="goToStep(1)">Commencer →</button>
-    </div>
-    <div class="step-counter">Étape 1 sur 4</div>
-  </div>
-
-  <!-- ── ÉTAPE 1 : identification ── -->
-  <div class="step hidden" id="step-1">
-    <div class="step-intro">
-      <h2 id="step1-titre"></h2>
-      <p id="step1-intro"></p>
-    </div>
-
-    <div class="field-group">
-      <label for="f-etablissement" id="label-etablissement">Quel est le nom de votre établissement ? <span class="required">*</span></label>
-      <input type="text" id="f-etablissement" placeholder="Ex : Lycée Jean Moulin, Toulouse" />
-    </div>
-
-    <!-- Majorité — hors établissement scolaire uniquement -->
-    <div class="field-group hidden" id="field-majeur">
-      <label>Êtes-vous majeur(e) ? <span class="required">*</span></label>
-      <div class="radio-group">
-        <label class="radio-label"><input type="radio" name="majeur" value="oui" onchange="onMajeurChange()" /> Oui</label>
-        <label class="radio-label"><input type="radio" name="majeur" value="non" onchange="onMajeurChange()" /> Non</label>
-      </div>
-    </div>
-
-    <!-- Champs d'identification : professeur (scolaire) ou majeur (hors scolaire) -->
-    <div id="prof-fields" class="hidden">
-      <div class="field-group">
-        <label for="f-nom">Quel est votre nom ? <span class="required">*</span></label>
-        <input type="text" id="f-nom" placeholder="Nom de famille" />
-      </div>
-      <div class="field-group">
-        <label for="f-prenom">Quel est votre prénom ?</label>
-        <input type="text" id="f-prenom" placeholder="Prénom" />
-      </div>
-    </div>
-
-    <div class="field-group" id="field-classe">
-      <label for="f-classe">Quelle est votre classe ?</label>
-      <input type="text" id="f-classe" placeholder="Ex : 6e A, CM2, L3…" />
-    </div>
-
-    <div class="field-group" id="field-seance-type">
-      <label>Type d'intervention</label>
-      <div class="radio-group">
-        <label class="radio-label"><input type="radio" name="seance" value="unique" checked onchange="onSeanceChange()" /> Séance unique</label>
-        <label class="radio-label"><input type="radio" name="seance" value="multiple" onchange="onSeanceChange()" /> Séances multiples</label>
-      </div>
-    </div>
-
-    <!-- Nb séances — séances multiples uniquement -->
-    <div id="field-nb-seances" class="hidden">
-      <div class="field-group">
-        <label for="f-nb-seances">Combien de séances avez-vous effectuées ?</label>
-        <select id="f-nb-seances">
-          <option value="" disabled selected>Choisissez</option>
-          <option value="1">1</option><option value="2">2</option>
-          <option value="3">3</option><option value="4">4</option>
-          <option value="5">5</option><option value="6">6</option>
-          <option value="7">7</option><option value="8">8</option>
-          <option value="9">9</option><option value="10">10 ou plus</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="field-group">
-      <label id="label-date">Quand a eu lieu l'intervention ?</label>
-      <input type="date" id="f-date" />
-    </div>
-
-    <div class="field-group" id="field-modalite">
-      <label id="label-modalite">L'intervention s'est-elle faite en présentiel ou en distanciel ?</label>
-      <div class="radio-group">
-        <label class="radio-label"><input type="radio" name="modalite" value="presentiel" checked /> Pr&eacute;sentiel</label>
-        <label class="radio-label"><input type="radio" name="modalite" value="distanciel" /> Distanciel</label>
-      </div>
-    </div>
-
-    <div class="step-nav">
-      <button class="btn-back" onclick="goToStep(0)">← Retour</button>
-      <button class="btn-next" onclick="goToStep(2)">Suivant →</button>
-    </div>
-    <div class="step-counter">Étape 2 sur 4</div>
-  </div>
-
-  <!-- ── ÉTAPE 2 : note + questions qualitatives ── -->
-  <div class="step hidden" id="step-2">
-    <div class="step-intro">
-      <h2>Vos impressions</h2>
-      <p>Pas de bonne ou mauvaise réponse — parlez librement !</p>
-    </div>
-
-    <div class="field-group">
-      <label>Si vous deviez mettre une note sur 20 à l'intervention, que mettriez-vous ?</label>
-      <div class="note-row">
-        <input type="range" id="f-note-slider" min="0" max="20" value="14" step="1" oninput="updateNote(this.value)" />
-        <span class="note-display" id="f-note-display">14 / 20</span>
-      </div>
-    </div>
-
-    <div class="field-group">
-      <label for="f-impression">Quelle est votre opinion générale de l'intervention ?</label>
-      <textarea id="f-impression" rows="3" placeholder="Vos premières impressions…"></textarea>
-    </div>
-
-    <div class="field-group">
-      <label for="f-preferes">Quels sont les points qui vous semblent les plus pertinents et clairs ?</label>
-      <textarea id="f-preferes" rows="3" placeholder="Les activités, les discussions, les exemples qui ont retenu votre attention…"></textarea>
-    </div>
-
-    <div class="field-group">
-      <label for="f-ameliorations">Quels points pensez-vous que nous devrions améliorer ?</label>
-      <textarea id="f-ameliorations" rows="3" placeholder="Ce qui était long, flou, trop difficile ou trop simple…"></textarea>
-    </div>
-
-    <div class="field-group">
-      <label for="f-retenir">Si vous deviez retenir UNE chose de l'intervention, qu'est-ce que ça serait ?</label>
-      <textarea id="f-retenir" rows="2" placeholder="En une phrase…"></textarea>
-    </div>
-
-    <div class="step-nav">
-      <button class="btn-back" onclick="goToStep(1)">← Retour</button>
-      <button class="btn-next" onclick="goToStep(3)">Suivant →</button>
-    </div>
-    <div class="step-counter">Étape 3 sur 4</div>
-  </div>
-
-  <!-- ── ÉTAPE 3 : témoignage pour le site ── -->
-  <div class="step hidden" id="step-3">
-    <div class="step-intro">
-      <h2>Un dernier mot ?</h2>
-      <p>Accepteriez-vous d'écrire un petit message vis-à-vis de mon intervention, que je posterai sur mon site ?</p>
-    </div>
-
-    <div class="field-group">
-      <label for="f-temoignage">Votre message (facultatif)</label>
-      <textarea id="f-temoignage" rows="4" placeholder="Quelques mots que je pourrais partager sur mon site…"></textarea>
-    </div>
-
-    <!-- Élève : message toujours anonyme -->
-    <p class="temoignage-note" id="temoignage-note-eleve">
-      Rassurez-vous, ce message sera publié <strong>de façon anonyme</strong>.
-    </p>
-
-    <!-- Professeur : choix de l'anonymat -->
-    <div class="field-group" id="temoignage-anon-prof" style="display:none">
-      <label class="checkbox-label">
-        <input type="checkbox" id="f-temoignage-anon" />
-        Je préfère que ce message soit publié de façon anonyme
-      </label>
-    </div>
-
-    <div class="step-nav">
-      <button class="btn-back" onclick="goToStep(2)">← Retour</button>
-      <button class="btn-submit" id="btn-submit" onclick="submitForm()">Envoyer mon retour ✓</button>
-    </div>
-    <div class="step-counter">Étape 4 sur 4</div>
-  </div>
-
-  <!-- ── Envoi en cours ── -->
-  <div class="step hidden" id="step-sending">
-    <div class="sending-screen">
-      <div class="spinner"></div>
-      <p>Génération du PDF et envoi en cours…</p>
-    </div>
-  </div>
-
-  <!-- ── Confirmation ── -->
-  <div class="step hidden" id="step-done">
-    <div class="done-screen">
-      <div class="done-icon">✓</div>
-      <h2>Merci pour votre retour !</h2>
-      <p id="done-msg">Vos réponses ont bien été transmises.</p>
-      <div id="done-actions" style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
-        <button class="btn-pdf" id="btn-dl-pdf" onclick="downloadPDF()">Télécharger le PDF</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Erreur ── -->
-  <div class="step hidden" id="step-error">
-    <div class="done-screen error-screen">
-      <div class="done-icon error-icon">✕</div>
-      <h2>Oups, une erreur…</h2>
-      <p id="error-msg">L'envoi a échoué. Veuillez réessayer.</p>
-      <button class="btn-next" onclick="goToStep(2)">← Réessayer</button>
-    </div>
-  </div>
-
-</div>
-
-<script src="retour_intervention.js"></script>
+  <script>window.location.replace("https://antoninatger.github.io/cours/retour-interventions/retour_intervention.html");</script>
 </body>
 </html>
